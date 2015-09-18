@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 // $Id$
-error_reporting(E_ALL^E_NOTICE);
+error_reporting(E_ALL ^ E_NOTICE);
 
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
@@ -10,24 +10,27 @@ foreach ($argv as $arg) {
     $oArg = substr($arg, 1);
   } else {
     switch ($oArg) {
-      case "P": case "A": case "T":
-        $argument["pages"][] = $arg;
-        break;
-      default:
+    case "P":case "A":case "T":
+      $argument["pages"][] = $arg;
+      break;
+    default:
       $argument[$oArg][] = $arg;
     }
   }
 }
 
 $slow_mode = false;
-$account_suffix='_4'; // Whilst testing
-$account_suffix='_1'; // Keep this before including expandFns
-include("expandFns.php");
+$account_suffix = '_4'; // Whilst testing
+$account_suffix = '_1'; // Keep this before including expandFns
+include "expandFns.php";
 $htmlOutput = false;
 $edit_initiator = '[Cat' . revisionID() . ']';
 
 $category = $argument["cat"] ? $argument["cat"][0] : $_GET["cat"];
-if (!$category) $category = "Pages_using_citations_with_old-style_implicit_et_al.";
+if (!$category) {
+  $category = "Pages_using_citations_with_old-style_implicit_et_al.";
+}
+
 if ($category) {
   $pages_in_category = categoryMembers($category);
   #print_r($pages_in_category);
@@ -38,16 +41,19 @@ if ($category) {
     echo ("\n\n\n*** Processing page '{$page_title}' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       echo "\n # Writing to " . $page->title . '... ';
-      while (!$page->write() && $attempts < 2) ++$attempts;
-      print $page->text; 
-      if ($attempts < 3 ) {
+      while (!$page->write() && $attempts < 2) {
+        ++$attempts;
+      }
+
+      print $page->text;
+      if ($attempts < 3) {
         echo $html_output ?
         " <small><a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&action=history>history</a> / "
         . "<a href=https://en.wikipedia.org/w/index.php?title=" . urlencode($page) . "&diff=prev&oldid="
         . getLastRev($page) . ">last edit</a></small></i>\n\n<br>"
         : ".";
       } else {
-         echo "\n # Failed. \n" . $page->text;
+        echo "\n # Failed. \n" . $page->text;
       }
     } else {
       echo "\n # " . ($page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
@@ -55,7 +61,7 @@ if ($category) {
     }
   }
 
-  exit ("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
+  exit("\n Done all " . count($pages_in_category) . " pages in Category:$category. \n");
 } else {
-  exit ("You must specify a category.  Try appending ?cat=Blah+blah to the URL.");
+  exit("You must specify a category.  Try appending ?cat=Blah+blah to the URL.");
 }

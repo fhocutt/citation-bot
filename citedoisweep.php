@@ -1,22 +1,21 @@
 <?php
 // $Id: # //
 
-
 die("there are bugs with this implementation.");
 
-$slowMode=false;
-$fastMode=false;
+$slowMode = false;
+$fastMode = false;
 $editInitiator = '[cDs]';
-$accountSuffix='_3';
+$accountSuffix = '_3';
 $citedoi = true;
 $citedoi_sweep = true;
 
 $ON = true;
 #$ON=false;
-include("expandFns.php");
+include "expandFns.php";
 
-$citeDois= array(
- "Cite doi/10.1006.2Fabbi.2000.2131
+$citeDois = array(
+  "Cite doi/10.1006.2Fabbi.2000.2131
 ", "Cite doi/10.1006.2Fjhev.1996.0058	", "Cite doi/10.1006.2Fjhev.1999.0379	", "Cite doi/10.1006.2Fjhev.2000.0421
 ", "Cite doi/10.1006.2Fjhev.2001.0457	", "Cite doi/10.1006.2Fjhev.2001.0525	", "Cite doi/10.1006.2Fplas.1994.1024
 ", "Cite doi/10.1006.2Fviro.1998.9367	", "Cite doi/10.1007.2F1-4020-2522-X 31	", "Cite doi/10.1007.2F978-0-387-09565-3 14
@@ -438,15 +437,15 @@ $citeDois= array(
 ", "Cite doi/10.2307.2F56388	", "Cite doi/10.2307.2F987289	", "Cite doi/10.2459.2FJCM.0b013e3283232a45
 ", "Cite doi/10.2514.2F1.35703	", "Cite doi/10.2533.2F000942904777677605	", "Cite doi/10.2968.2F064002006
 ", "Cite doi/10.3109.2F01485019208987723	", "Cite doi/10.3171.2FJNS.2F2008.2F109.2F8.2F0325	", "Cite doi/10.4003.2F0740-2783-25.1.25
-", "Cite doi/10.1130.2FB25215.1"
+", "Cite doi/10.1130.2FB25215.1",
 
 );
 
-function nextPage(){
-	global $citeDois;
-	return "Template:" . trim(array_shift($citeDois));
+function nextPage() {
+  global $citeDois;
+  return "Template:" . trim(array_shift($citeDois));
 }
 
 $page = nextPage();
 
-include("expand.php");
+include "expand.php";

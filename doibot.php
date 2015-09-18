@@ -37,7 +37,7 @@
             <pre><?php
 ## Set up - including dotDecode array
 $html_output = TRUE;
-require_once ("expandFns.php");
+require_once "expandFns.php";
 
 $editInitiator = "[" . revisionID() . "]";
 
@@ -54,29 +54,29 @@ $pmid_input = trim(str_replace(array("pmid", "PMID"), "", $_GET["pmid"]));
 $pmc_input = trim(str_replace(array("pmc", "PMC"), "", $_GET["pmc"]));
 
 if ($pmid_input) {
-	$page = new Page();
-  if ((int) $pmid_input > 0 && (int) $pmid_input < 30000000) {
-    $page->text = "{{Cite pmid|" . trim((int) $pmid_input) . "}}";
-    $page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
-    $page->expand_remote_templates();
-  } else {
-    echo ("\n ! The specified PMID, '" . htmlspecialchars($pmid_input) . "', appears to be invalid.");
-  }
-  $dont_expand = TRUE;
+$page = new Page();
+if ((int) $pmid_input > 0 && (int) $pmid_input < 30000000) {
+$page->text = "{{Cite pmid|" . trim((int) $pmid_input) . "}}";
+$page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
+$page->expand_remote_templates();
+} else {
+echo ("\n ! The specified PMID, '" . htmlspecialchars($pmid_input) . "', appears to be invalid.");
+}
+$dont_expand = TRUE;
 }
 if ($doi_input) {
-	$page = new Page();
-  if (preg_match('~^10.\d{4}/.+[A-z0-9]$~', $doi_input)) {
-    $page->text = "{{Cite doi|" . $doi_input . "}}";
-    $page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
-    $page->expand_remote_templates();
-  } else {
-    echo ("\n ! The specified DOI, '" . htmlspecialchars($doi_input) . "', appears to be invalid.");
-  }
-  $dont_expand = TRUE;
+$page = new Page();
+if (preg_match('~^10.\d{4}/.+[A-z0-9]$~', $doi_input)) {
+$page->text = "{{Cite doi|" . $doi_input . "}}";
+$page->title = $_REQUEST["page"] ? ucfirst($_REQUEST["page"]) : "[User-activated]";
+$page->expand_remote_templates();
+} else {
+echo ("\n ! The specified DOI, '" . htmlspecialchars($doi_input) . "', appears to be invalid.");
+}
+$dont_expand = TRUE;
 }
 ####### end TODO. Works fine with this commented out.
-*/
+ */
 
 $title = trim(ucfirst(strip_tags($_REQUEST["page"])));
 print "\n\n Expanding '" . htmlspecialchars($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.";
@@ -87,12 +87,12 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
     while (!$my_page->write() && $attempts < 2) {
       ++$attempts;
     }
-    if ($attempts < 3 ) {
+    if ($attempts < 3) {
       echo $html_output ?
-        " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
-        . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
-        . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
-        : ".";
+      " <small><a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history>history</a> / "
+      . "<a href=https://test.wikipedia.org/w/index.php?title=" . urlencode($title) . "&diff=prev&oldid="
+      . getLastRev($title) . ">last edit</a></small></i>\n\n<br>"
+      : ".";
     } else {
       echo "\n # Failed. Text was:\n" . $my_page->text;
     }
@@ -100,7 +100,7 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
     echo "\n # Proposed code for " . $my_page->title . ', which you have asked the bot to commit with edit summary ' . $my_page->edit_summary() . "<br><pre>";
     echo $my_page->text;
     echo "</pre>";
-?>
+    ?>
 <form method="post" action="doibot.php">
   <input type="hidden" name="page" value="<?php echo $title;?>"></input>
   <input type="hidden" name="user" value="<?php echo $user;?>"></input>
@@ -109,7 +109,7 @@ if ($my_page->get_text_from($_REQUEST["page"])) {
   <input type=submit value="Submit edits"></input>
 </form>
 <?php
-  } else {
+} else {
     echo "\n # " . ($my_page->text ? 'No changes required.' : 'Blank page') . "\n # # # ";
     updateBacklog($my_page->title);
   }
