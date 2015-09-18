@@ -1,10 +1,10 @@
 <?php
 
 // $Id: $
-define ("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
-define ("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
+define("template_regexp", "~\{\{\s*([^\|\}]+)([^\{]|\{[^\{])*?\}\}~");
+define("BRACESPACE", "!BOTCODE-spaceBeforeTheBrace");
 
-function categoryMembers($cat){
+function categoryMembers($cat) {
   $vars = Array(
     "cmtitle" => "Category:$cat", // Don't URLencode.
     "action" => "query",
@@ -14,24 +14,24 @@ function categoryMembers($cat){
   );
   $qc = "query-continue";
 
-	do {
-		set_time_limit(40);
+  do {
+    set_time_limit(40);
     $res = load_xml_via_bot($vars);
-  	if ($res) {
+    if ($res) {
       foreach ($res->query->categorymembers->cm as $page) {
-          $list[] = (string) $page["title"];
-        }
+        $list[] = (string) $page["title"];
+      }
     } else {
       echo 'Error reading API from ' . $url . "\n\n";
     }
-	} while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
-  return $list?$list:Array(" ");
+  } while ($vars["cmcontinue"] = (string) $res->$qc->categorymembers["cmcontinue"]);
+  return $list ? $list : Array(" ");
 }
 
 // Returns an array; Array ("title1", "title2" ... );
-function whatTranscludes($template, $namespace=99){
-	$titles = whatTranscludes2($template, $namespace);
-	return $titles["title"];
+function whatTranscludes($template, $namespace = 99) {
+  $titles = whatTranscludes2($template, $namespace);
+  return $titles["title"];
 }
 
 function wikititle_encode($in) {
@@ -43,20 +43,20 @@ function anchorencode($in) {
   return wikititle_encode(preg_replace('~<[^>]*>~', '', $in));
 }
 
-function getLastRev($page){
+function getLastRev($page) {
   $xml = load_xml_via_bot(Array(
-      "action" => "query",
-      "prop" => "revisions",
-      "format" => "xml",
-      "titles" => $page,
-    ));
+    "action" => "query",
+    "prop" => "revisions",
+    "format" => "xml",
+    "titles" => $page,
+  ));
   return $xml->query->pages->page->revisions->rev["revid"];
 }
 
 function getPrefixIndex($prefix, $namespace = 0, $start = "") {
   global $bot;
-  $vars["apfrom"]  = $start;
-  $vars = Array ("action" => "query",
+  $vars["apfrom"] = $start;
+  $vars = Array("action" => "query",
     "list" => "allpages",
     "format" => "xml",
     "apnamespace" => $namespace,
@@ -64,7 +64,7 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
     "aplimit" => "5000",
   );
   do {
-		set_time_limit(10);
+    set_time_limit(10);
     $res = load_xml_via_bot($vars);
     if ($res) {
       foreach ($res->query->allpages->p as $page) {
@@ -74,54 +74,54 @@ function getPrefixIndex($prefix, $namespace = 0, $start = "") {
     } else {
       echo 'Error reading API from ' . $url;
     }
-	} while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
+  } while ($vars["apfrom"] = (string) $res->{"query-continue"}->allpages["apfrom"]);
   set_time_limit(45);
   return $page_titles;
 }
 
 function getArticleId($page) {
   $xml = load_xml_via_bot(Array(
-      "action" => "query",
-      "format" => "xml",
-      "prop" => "info",
-      "titles" => $page,
-      ));
+    "action" => "query",
+    "format" => "xml",
+    "prop" => "info",
+    "titles" => $page,
+  ));
   return $xml->query->pages->page["pageid"];
 }
 
 function getNamespace($page) {
-	$xml = load_xml_via_bot(Array("action" => "query",
-      "format" => "xml",
-      "prop" => "info",
-      "titles" => $page,
-      ));
+  $xml = load_xml_via_bot(Array("action" => "query",
+    "format" => "xml",
+    "prop" => "info",
+    "titles" => $page,
+  ));
   return $xml->query->pages->page["ns"];
 }
 
 function isRedirect($page) {
   $url = Array(
-      "action" => "query",
-      "format" => "xml",
-      "prop" => "info",
-      "titles" => $page,
-      );
+    "action" => "query",
+    "format" => "xml",
+    "prop" => "info",
+    "titles" => $page,
+  );
   $xml = load_xml_via_bot($url);
-	if ($xml->query->pages->page["pageid"]) {
+  if ($xml->query->pages->page["pageid"]) {
     // Page exists
-    return array ((($xml->query->pages->page["redirect"])?1:0),
-                    $xml->query->pages->page["pageid"]);
-    } else {
-      return array (-1, null);
-   }
+    return array((($xml->query->pages->page["redirect"]) ? 1 : 0),
+      $xml->query->pages->page["pageid"]);
+  } else {
+    return array(-1, null);
+  }
 }
 
 function redirect_target($page) {
   $url = Array(
-      "action" => "query",
-      "format" => "xml",
-      "redirects" => "1",
-      "titles" => $page,
-      );
+    "action" => "query",
+    "format" => "xml",
+    "redirects" => "1",
+    "titles" => $page,
+  );
   $xml = load_xml_via_bot($url);
   print_r($xml->query);
   return $xml->pages->page["title"];
@@ -129,13 +129,13 @@ function redirect_target($page) {
 
 function parse_wikitext($text, $title = "API") {
   $bot = new Snoopy();
-  $bot->httpmethod="POST";
+  $bot->httpmethod = "POST";
   $vars = array(
-        'format' => 'json',
-        'action' => 'parse',
-        'text'   => $text,
-        'title'  => $title,
-    );
+    'format' => 'json',
+    'action' => 'parse',
+    'text' => $text,
+    'title' => $title,
+  );
   $bot->submit(api, $vars);
   $a = json_decode($bot->results);
   if (!$a) {
@@ -148,18 +148,18 @@ function parse_wikitext($text, $title = "API") {
 }
 
 function articleID($page, $namespace = 0) {
-  if (substr(strtolower($page), 0, 9) == 'template:'){
+  if (substr(strtolower($page), 0, 9) == 'template:') {
     $page = substr($page, 9);
     $namespace = 10;
   } else if (strpos($page, ':')) {
     // I'm too lazy to deduce the correct namespace prefix.
     return getArticleId($page);
   }
-  $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
+  $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page, 1)));
   #$enwiki_db = udbconnect('enwiki_p', 'sql-s1');
   $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
   $result = mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
-          . "' && page_title='$page'") or die (mysql_error());
+    . "' && page_title='$page'") or die(mysql_error());
   $results = mysql_fetch_array($result, MYSQL_ASSOC);
   mysql_close($enwiki_db);
   return $results['page_id'];
@@ -168,12 +168,12 @@ function articleID($page, $namespace = 0) {
 function getRawWikiText($page, $wait = false, $verbose = false, $use_daniel = true) {
   $encode_page = urlencode($page);
   echo $verbose ? "\n scraping... " : "";
-    // Get the text by scraping edit page
-    $url = wikiroot . "title=" . $encode_page . "&action=raw";
-    $contents = (string) @file_get_contents($url);
+  // Get the text by scraping edit page
+  $url = wikiroot . "title=" . $encode_page . "&action=raw";
+  $contents = (string) @file_get_contents($url);
   if (!$contents && $use_daniel) {
     $url = "http://toolserver.org/~daniel/WikiSense/WikiProxy.php?wiki=en&title="
-        . $encode_page . "&rev=&go=Fetch&token=";
+    . $encode_page . "&rev=&go=Fetch&token=";
     $contents = (string) file_get_contents($url);
     if (!$contents) {
       print $verbose ? "\n <br />Couldn't fetch $page; retrying" : "";
@@ -201,26 +201,29 @@ function is_valid_user($user) {
 }
 
 function whatTranscludes2($template, $namespace = 99) {
-	$vars = Array (
-      "action" => "query",
-      "list" => "embeddedin",
-      "eilimit" => "5000",
-      "format" => "xml",
-      "eititle" => "Template:" . $template,
-      "einamespace" => ($namespace==99)?"":$namespace,
+  $vars = Array(
+    "action" => "query",
+    "list" => "embeddedin",
+    "eilimit" => "5000",
+    "format" => "xml",
+    "eititle" => "Template:" . $template,
+    "einamespace" => ($namespace == 99) ? "" : $namespace,
   );
-	do {
-		set_time_limit(20);
+  do {
+    set_time_limit(20);
     $res = load_xml_via_bot($vars);
     print_r($res->query);
-		if (!$res) {
+    if (!$res) {
       echo 'Error reading API from ' . $url . "\n";
-    } else foreach($res->query->embeddedin->ei as $page) {
-			$list["title"][] = (string) $page["title"];
-			$list["id"][] = (integer) $page["pageid"];
-		}
-	} while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
-	return $list;
+    } else {
+      foreach ($res->query->embeddedin->ei as $page) {
+        $list["title"][] = (string) $page["title"];
+        $list["id"][] = (integer) $page["pageid"];
+      }
+    }
+
+  } while ($vars["eicontinue"] = (string) $res->{"query-continue"}->embeddedin["eicontinue"]);
+  return $list;
 }
 
 #### Functions below were written offline so need testing & debgging
@@ -266,7 +269,7 @@ function extract_parameters($template) {
   // Remove whitespace and braces from template
   $template = trim($template);
   $template = substr($template, 2, -2);
-  if (preg_match ("~\s*$~", $template, $space_before_the_brace)) {
+  if (preg_match("~\s*$~", $template, $space_before_the_brace)) {
     $template = preg_replace("~\s*$~", "", $template);
     $parameters[BRACESPACE] = $space_before_the_brace;
   }
@@ -293,7 +296,7 @@ function extract_parameters($template) {
     if ($i % 2) {
       $lines[$i / 2] = $split;
     } else {
-      $pipe[($i+1) / 2] = $split;
+      $pipe[($i + 1) / 2] = $split;
     }
   }
   unset($lines[0]);
@@ -320,25 +323,28 @@ function extract_parameters($template) {
 }
 
 // Transforms an array in "$p format" back into a template
-function generate_template ($name, $parameters) {
+function generate_template($name, $parameters) {
   $output = '{{' . $name;
   $space_before_the_brace = $parameters[BRACESPACE][0];
   unset($parameters[BRACESPACE]);
   foreach ($parameters as $key => $value) {
     // Array (value, equals, pipe[, weight] )
-    $output .= $value[1] . (substr($key, 0, 18) == "unnamed_parameter_" || $key=="0"?"":$key) . $value[2] . $value[0];
+    $output .= $value[1] . (substr($key, 0, 18) == "unnamed_parameter_" || $key == "0" ? "" : $key) . $value[2] . $value[0];
   }
   return $output . $space_before_the_brace . '}}';
 }
 
 function wikiLink($page, $style = "#036;", $target = null) {
-  if (!$target) $target = $page;
-  $css = $style?" style='color:$style !important'":"";
+  if (!$target) {
+    $target = $page;
+  }
+
+  $css = $style ? " style='color:$style !important'" : "";
   return "<a href='" . wikiroot . "title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
 }
 
-function geo_range_ok ($template) {
-  $text = parse_wikitext ($template); // TODO check that this function returns the expected output
+function geo_range_ok($template) {
+  $text = parse_wikitext($template); // TODO check that this function returns the expected output
   return strpos($text, "Expression error:") ? false : true;
 }
 
@@ -353,7 +359,7 @@ function touch_page($page) {
   $text = getRawWikiText($page);
   if ($text) {
     global $editInitiator;
-    write ($page, $text, $editInitiator . " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
+    write($page, $text, $editInitiator . " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
     return true;
   } else {
     return false;

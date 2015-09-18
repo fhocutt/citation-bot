@@ -2,33 +2,38 @@
 <?php
 // $Id: console-doibot.php 169 2010-07-03 08:45:38Z MartinS $
 
-error_reporting(E_ALL^E_NOTICE);
+error_reporting(E_ALL ^ E_NOTICE);
 $slowMode = false;
 $fastMode = false;
 $accountSuffix = '_1'; // Keep this before including expandFns
-include("expandFns.php");
+include "expandFns.php";
 $htmlOutput = false;
 $editInitiator = '[Pu' . revisionID() . ']';
 $ON = true; // Override later if necessary
-define ("START_HOUR", date("H"));
+define("START_HOUR", date("H"));
 
-
-function nextPage(){
+function nextPage() {
   global $ON, $STOP;
-	if (!$ON || $STOP) die ("\n** EXIT: Bot switched off.\n");
-  if (date("H") != START_HOUR) die ("\n ** EXIT: It's " . date("H") . " o'clock!\n");
-	$db = udbconnect();
-	$result = mysql_query ("SELECT /* SLOW_OK */ page FROM citation ORDER BY fast ASC") or die(mysql_error());
-	$result = mysql_query("SELECT /* SLOW_OK */ page FROM citation ORDER BY fast ASC") or die (mysql_error());
-	$result = mysql_fetch_row($result);
+  if (!$ON || $STOP) {
+    die("\n** EXIT: Bot switched off.\n");
+  }
+
+  if (date("H") != START_HOUR) {
+    die("\n ** EXIT: It's " . date("H") . " o'clock!\n");
+  }
+
+  $db = udbconnect();
+  $result = mysql_query("SELECT /* SLOW_OK */ page FROM citation ORDER BY fast ASC") or die(mysql_error());
+  $result = mysql_query("SELECT /* SLOW_OK */ page FROM citation ORDER BY fast ASC") or die(mysql_error());
+  $result = mysql_fetch_row($result);
   mysql_close($db);
-	return $result[0];
+  return $result[0];
 }
 
 #$STOP = true;
 #$ON = false; // Uncomment this line to set the bot onto the Zandbox, switched off.
 
-$page = "User:DOI bot/Zandbox";  // Leave this line as is.  It'll be over-written when the bot is turned on.
+$page = "User:DOI bot/Zandbox"; // Leave this line as is.  It'll be over-written when the bot is turned on.
 if ($ON) {
   echo "\n Fetching first page from backlog ... ";
   $page = nextPage();
